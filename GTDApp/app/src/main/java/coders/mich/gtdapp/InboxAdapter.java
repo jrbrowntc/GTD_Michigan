@@ -64,7 +64,7 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.InboxAdapter
     @Override
     public void onBindViewHolder(InboxAdapterViewHolder holder, int position) {
         String inboxItemDetails = mInboxData[position];
-        InboxAdapterViewHolder.mInboxTextView.setText(inboxItemDetails);
+        holder.mInboxTextView.setText(inboxItemDetails);
     }
 
     public void setInboxData(String[] inboxData) {
