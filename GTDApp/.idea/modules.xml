@@ -3,7 +3,9 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/GTDApp.iml" filepath="$PROJECT_DIR$/GTDApp.iml" />
+      <module fileurl="file://C:\Users\ioutd\Documents\GitHub\GTD_Michigan_Origin\GTDApp\GTDApp.iml" filepath="C:\Users\ioutd\Documents\GitHub\GTD_Michigan_Origin\GTDApp\GTDApp.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://C:\Users\ioutd\Documents\GitHub\GTD_Michigan_Origin\GTDApp\app\app.iml" filepath="C:\Users\ioutd\Documents\GitHub\GTD_Michigan_Origin\GTDApp\app\app.iml" />
     </modules>
   </component>
 </project>
