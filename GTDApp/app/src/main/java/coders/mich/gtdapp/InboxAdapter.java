@@ -50,7 +50,7 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.InboxAdapter
 
         public InboxAdapterViewHolder(View itemView) {
             super(itemView);
-            mInboxTextView = itemView.findViewById(R.id.tv_item_data);
+            mInboxTextView = itemView.findViewById(R.id.tv_date_label);
             itemView.setOnClickListener(this);
         }
 
