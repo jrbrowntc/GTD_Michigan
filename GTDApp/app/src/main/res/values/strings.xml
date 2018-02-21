@@ -1,4 +1,15 @@
 <resources>
     <string name="app_name">GTD App</string>
     <string name="title_activity_test_main">TestMainActivity</string>
+    
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
+
+    <!-- Bottom Nav Bar -->
+    <string name="title_navigation_capture">Capture</string>
+    <string name="title_navigation_process">Process</string>
+    <string name="title_navigation_organize">Organize</string>
+    <string name="title_navigation_review">Review</string>
+    <string name="title_navigation_engage">Engage</string>
 </resources>
