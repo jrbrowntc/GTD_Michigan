@@ -14,7 +14,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        inboxButton = findViewById(R.id.inboxButton);
+        inboxButton = findViewById(R.id.btn_inbox);
         inboxButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -23,6 +23,15 @@ public class MainActivity extends AppCompatActivity {
                 Intent intentToStartDetailActivity = new Intent(context, destinationClass);
                 intentToStartDetailActivity.putExtra(Intent.EXTRA_TEXT, inbox);
                 startActivity(intentToStartDetailActivity);
+            }
+        });
+
+        findViewById(R.id.btn_test_main_activity).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent testMainActivityIntent = new Intent(getApplicationContext(),
+                        TestMainActivity.class);
+                startActivity(testMainActivityIntent);
             }
         });
     }

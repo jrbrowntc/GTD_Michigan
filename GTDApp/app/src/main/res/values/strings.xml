@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">GTD App</string>
+    <string name="title_activity_test_main">TestMainActivity</string>
 </resources>
