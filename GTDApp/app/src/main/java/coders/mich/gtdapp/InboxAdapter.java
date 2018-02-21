@@ -2,6 +2,7 @@ package coders.mich.gtdapp;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,8 @@ import android.widget.TextView;
  * {@link android.support.v7.widget.RecyclerView}
  */
 public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.InboxAdapterViewHolder> {
+
+    private final String TAG = InboxAdapter.class.getSimpleName();
 
     private String[] mInboxData;
 
@@ -59,6 +62,8 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.InboxAdapter
             int adapterPos = getAdapterPosition();
             String itemData = mInboxData[adapterPos];
             mClickHandler.onClick(itemData);
+            Log.v(TAG, "onClick");
+
         }
     }
     @Override
