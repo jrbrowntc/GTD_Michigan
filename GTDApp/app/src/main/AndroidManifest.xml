@@ -17,6 +17,9 @@
             </intent-filter>
         </activity>
         <activity android:name=".InboxActivity"></activity>
+
+        <meta-data android:name="firebase_analytics_collection_deactivated" android:value="true" />
+
     </application>
 
 </manifest>
