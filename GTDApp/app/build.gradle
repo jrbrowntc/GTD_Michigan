@@ -29,5 +29,6 @@ dependencies {
     implementation 'com.android.support:design:26.1.0'
     compile 'com.google.firebase:firebase-core:11.8.0'
     compile 'com.google.firebase:firebase-firestore:11.8.0'
+    compile 'com.firebaseui:firebase-ui-firestore:3.1.0'
 }
 apply plugin: 'com.google.gms.google-services'

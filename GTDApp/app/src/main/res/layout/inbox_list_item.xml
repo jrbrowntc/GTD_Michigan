@@ -6,26 +6,26 @@
     android:layout_height="wrap_content">
 
     <TextView
-        android:id="@+id/tv_inbox_task"
+        android:id="@+id/tv_inbox_item_name"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
-        app:layout_constraintEnd_toStartOf="@+id/tv_inbox_task_date"
+        app:layout_constraintEnd_toStartOf="@+id/tv_inbox_item_date_created"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Go Grocery Shopping" />
 
     <TextView
-        android:id="@+id/tv_inbox_task_date"
+        android:id="@+id/tv_inbox_item_date_created"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.75"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/tv_inbox_task"
+        app:layout_constraintTop_toTopOf="@+id/tv_inbox_item_name"
         tools:text="2/17/2018" />
 
     <!--This View serves as a visual divider between list items-->
@@ -38,5 +38,5 @@
         android:background="#dadada"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tv_inbox_task" />
+        app:layout_constraintTop_toBottomOf="@id/tv_inbox_item_name" />
 </android.support.constraint.ConstraintLayout>

@@ -10,6 +10,10 @@ import android.widget.TextView;
 
 /**
  * Created by jasonbrown on 2/16/18.
+ *
+ *
+ * Not in use anymore, replaced by inner FirestoreRecyclerAdapter in InboxActivity
+ *
  */
 /**
  * {@link InboxAdapter} exposes a list of weather forecasts to a
