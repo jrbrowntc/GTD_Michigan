@@ -26,11 +26,14 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.firebase.firestore.SetOptions;
 
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class InboxActivity extends AppCompatActivity implements InboxAdapter.InboxAdapterOnClickHandler{
 
@@ -86,8 +89,10 @@ public class InboxActivity extends AppCompatActivity implements InboxAdapter.Inb
     }
 
     private void getItemList() {
-        Query query = firestoreDB.collection("/users/" + testUserId + "/items");
-        query.whereEqualTo("bucket", "users/" + testUserId + "/buckets/" + mBucketName);
+
+        final CollectionReference itemsCollectionRef = firestoreDB.collection("/users/" + testUserId + "/items");
+        final DocumentReference inboxDocumentRef = firestoreDB.document("users/" + testUserId + "/buckets/inbox");
+        final Query query = itemsCollectionRef.whereEqualTo("bucket", inboxDocumentRef);
 
         FirestoreRecyclerOptions<Item> response = new FirestoreRecyclerOptions.Builder<Item>()
                 .setQuery(query, Item.class)
@@ -114,14 +119,22 @@ public class InboxActivity extends AppCompatActivity implements InboxAdapter.Inb
                         Log.d(TAG, "item name clicked: " + item.getId());
                     }
                 });
-                // @todo good ui for actions on items: change bucket, edit, delete, complete
-/*                holder.delete.setOnClickListener(new View.OnClickListener() {
+                // @todo good ui for actions on items: complete, edit, delete. 3 buttons is a bit much per row.
+                holder.btnComplete.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Log.d(TAG, "item complete clicked");
+                        completeItem(item.getId());
+                    }
+                });
+
+                holder.btnDelete.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         Log.d(TAG, "item delete clicked");
                         deleteItem(item.getId());
                     }
-                });*/
+                });
             }
 
             @Override
@@ -135,6 +148,12 @@ public class InboxActivity extends AppCompatActivity implements InboxAdapter.Inb
             @Override
             public void onError(FirebaseFirestoreException e) {
                 Log.e("error", e.getMessage());
+            }
+
+            @Override
+            public void onDataChanged() {
+                super.onDataChanged();
+                Log.d(TAG,"on Data changed");
             }
 
         };
@@ -156,13 +175,30 @@ public class InboxActivity extends AppCompatActivity implements InboxAdapter.Inb
         mFirestoreAdapter.stopListening();
     }
 
-    private void updateItem(Item item) {
+    private void updateItem(String id) {
         // @todo UI needs an edit button, call this method from its click handler
         // @todo build intent with item ID and start another Activity
     }
 
+    private void completeItem(String id) {
+
+        DocumentReference completedBucket = firestoreDB.document("/users/" + testUserId + "/buckets/completed");
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("bucket", completedBucket);
+
+        firestoreDB.collection("/users/" + testUserId + "/items")
+                .document(id)
+                .set(data, SetOptions.merge())
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        Toast.makeText(getApplicationContext(), "Item has been moved to completed bucket", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
     private void deleteItem(String id) {
-        // @todo UI needs an edit button, call this method from its click handler
         firestoreDB.collection("/users/" + testUserId + "/items")
                 .document(id)
                 .delete()
