@@ -16,11 +16,18 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+<<<<<<< HEAD
         <activity android:name=".InboxActivity" />
         <activity
             android:name=".TestMainActivity"
             android:label="@string/title_activity_test_main">
         </activity>
+=======
+        <activity android:name=".InboxActivity"></activity>
+
+        <meta-data android:name="firebase_analytics_collection_deactivated" android:value="true" />
+
+>>>>>>> inbox
     </application>
 
 </manifest>
