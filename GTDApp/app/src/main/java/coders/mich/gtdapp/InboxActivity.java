@@ -23,7 +23,6 @@ public class InboxActivity extends AppCompatActivity implements InboxAdapter.Inb
         mRecyclerView = findViewById(R.id.inbox_recycler_view);
         int recyclerViewOrientation = LinearLayoutManager.VERTICAL;
 
-
         boolean shouldReverseLayout = false;
         LinearLayoutManager layoutManager
                 = new LinearLayoutManager(this, recyclerViewOrientation, shouldReverseLayout);
@@ -38,7 +37,6 @@ public class InboxActivity extends AppCompatActivity implements InboxAdapter.Inb
                 textview.setText(mBucketName);
             }
         }
-
     }
 
     @Override
