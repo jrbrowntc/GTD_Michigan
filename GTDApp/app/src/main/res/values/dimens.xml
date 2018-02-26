@@ -5,4 +5,9 @@
 
     <dimen name="fab_size">56dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
+
+
+    <dimen name="fab_size_normal">56dp</dimen>
+    <dimen name="fab_size_mini">40dp</dimen>
+    <dimen name="fab_shadow">3dp</dimen>
 </resources>

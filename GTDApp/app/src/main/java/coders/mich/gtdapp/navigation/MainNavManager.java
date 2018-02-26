@@ -20,7 +20,7 @@ import coders.mich.gtdapp.R;
  * Created by drew on 2/21/2018.
  */
 
-public class MainNavManager {
+public abstract class MainNavManager {
 
     private Context context;
 
@@ -70,16 +70,21 @@ public class MainNavManager {
 
     }
 
+    public abstract void onPageScrolled(int position, float positionOffset, int positionOffsetPixels);
+    public abstract void onPageSelected(int position);
+    public abstract void onPageDrawn(int position);
+
     private final ViewPager.OnPageChangeListener contentPageChangeListener = new ViewPager.OnPageChangeListener() {
         @Override
         public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
+            MainNavManager.this.onPageScrolled(position, positionOffset, positionOffsetPixels);
         }
 
         @Override
         public void onPageSelected(int position) {
             navigation.setSelectedItemId(
                     menuButtonIds.get(position));
+            MainNavManager.this.onPageSelected(position);
         }
 
         @Override
@@ -95,12 +100,21 @@ public class MainNavManager {
         public ContentViewPagerAdapter() {}
 
         @Override
-        public Object instantiateItem(ViewGroup container, int position) {
+        public Object instantiateItem(ViewGroup container, final int position) {
             layoutInflater =
                     (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
             View view = layoutInflater.inflate(
                     contentLayouts[position], container, false);
+
+            // Notify when view is drawn
+            view.post(new Runnable() {
+                @Override
+                public void run() {
+                    onPageDrawn(position);
+                }
+            });
+
             container.addView(view);
 
             return view;
