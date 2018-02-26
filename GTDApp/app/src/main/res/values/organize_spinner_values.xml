@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="organize_array">
+        <item>By Priority</item>
+        <item>By Date</item>
+        <item>By Estimated Duration</item>
+        <item>By Number of Items</item>
+    </string-array>
+</resources>
