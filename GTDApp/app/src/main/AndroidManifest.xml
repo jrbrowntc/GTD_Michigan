@@ -28,7 +28,7 @@
         <activity
             android:name=".TestMain2Activity"
             android:label="@string/title_activity_test_main2"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/ProtoAppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>
