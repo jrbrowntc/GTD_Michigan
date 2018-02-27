@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">GTD App</string>
-    <string name="title_activity_test_main">TestMainActivity</string>
+    <string name="title_activity_test_main">Getting Things Done</string>
     
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>

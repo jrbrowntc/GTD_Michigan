@@ -5,6 +5,7 @@ import android.support.design.widget.CoordinatorLayout;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageButton;
 
 import coders.mich.gtdapp.R;
 import coders.mich.gtdapp.utils.helpers;
@@ -31,7 +32,8 @@ public class MainFabAnimationManager {
     private int screenHeight, screenWidth;
     private float startX, startY, endX, endY, startSize, endSize;
 
-    private View fab;
+    private ImageButton fab;
+    private boolean iconUpdateNeeded = false;
 
     public MainFabAnimationManager(Activity activity, View view) {
         DisplayMetrics displayMetrics = new DisplayMetrics();
@@ -53,7 +55,7 @@ public class MainFabAnimationManager {
         startSize = fabSizeMini;
         endSize = fabSizeNormal;
 
-        fab = view;
+        setFab(view);
     }
 
     public void moveToScreenCenterPosition() {
@@ -75,6 +77,13 @@ public class MainFabAnimationManager {
     public void updateWithViewPager(int position, float positionOffset, int positionOffsetPixels) {
         // only animate on first 'capture' page
         if (position == 0) {
+            if (positionOffset == 0) {
+                fab.setImageResource(R.drawable.ic_done_black_24dp);
+                iconUpdateNeeded = true;
+            } else if (iconUpdateNeeded) {
+                fab.setImageResource(R.drawable.ic_add_black_24dp);
+                iconUpdateNeeded = false;
+            }
             float xPos = helpers.map(positionOffset, 0, 1, startX, endX);
             float yPos = helpers.map(positionOffset, 0, 1, startY, endY);
             int size = (int) helpers.map(positionOffset, 0, 1, startSize, endSize);
@@ -123,6 +132,6 @@ public class MainFabAnimationManager {
     }
 
     public void setFab(View fab) {
-        this.fab = fab;
+        this.fab = (ImageButton) fab;
     }
 }

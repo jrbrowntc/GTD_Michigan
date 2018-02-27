@@ -15,6 +15,7 @@
         app:layout_constraintBottom_toBottomOf="parent">
         <EditText
             android:hint="New Task"
+            android:focusable="false"
             android:layout_width="match_parent"
             android:layout_height="@dimen/fab_size_mini"
             android:layout_marginLeft="16dp"
