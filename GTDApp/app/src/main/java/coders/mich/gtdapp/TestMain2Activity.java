@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -16,8 +17,14 @@ import android.transition.AutoTransition;
 import android.transition.TransitionManager;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.SubMenu;
 import android.view.View;
 import android.view.ViewGroup;
+
+import java.util.List;
+
+import coders.mich.gtdapp.data.DummyData;
+import coders.mich.gtdapp.data.dao.Bucket;
 
 public class TestMain2Activity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -27,6 +34,8 @@ public class TestMain2Activity extends AppCompatActivity
 
     private FloatingActionButton fab;
     private AnimatedVectorDrawable avdAddToDone, avdDoneToAdd;
+
+    private NavigationView navigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,8 +65,10 @@ public class TestMain2Activity extends AppCompatActivity
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        fillMenu();
     }
 
     @Override
@@ -85,7 +96,8 @@ public class TestMain2Activity extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_process) {
+            Snackbar.make(fab, "Process Action Selected", Snackbar.LENGTH_LONG).show();
             return true;
         }
 
@@ -98,19 +110,7 @@ public class TestMain2Activity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
-        }
+        // TODO: 2/27/2018 Come up with some way of detecting which of the dynamically created buckets was selected
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -151,5 +151,25 @@ public class TestMain2Activity extends AppCompatActivity
         }
 
         modalVisible = !modalVisible;
+    }
+
+    public void fillMenu() {
+        Menu menu = navigationView.getMenu();
+        SubMenu subMenu = menu.addSubMenu("Buckets");
+
+        // TODO: 2/27/2018 Replace with Room DAO Method to get all buckets
+        List<Bucket> buckets = DummyData.getBuckets();
+
+        for (int i = 0; i < buckets.size(); i++) {
+            Bucket bucket = buckets.get(i);
+            String bucketName = bucket.getName();
+            Integer iconId = bucket.getIconId();
+
+            if (iconId == null) iconId = R.drawable.ic_folder_black_24dp;
+
+            subMenu.add(0, Menu.FIRST + i, Menu.FIRST, bucketName)
+                    .setCheckable(true)
+                    .setIcon(iconId);
+        }
     }
 }
