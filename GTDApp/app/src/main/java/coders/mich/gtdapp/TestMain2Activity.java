@@ -1,5 +1,7 @@
 package coders.mich.gtdapp;
 
+import android.graphics.drawable.AnimatedVectorDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -23,6 +25,9 @@ public class TestMain2Activity extends AppCompatActivity
     private boolean modalVisible = false;
     private CardView modal;
 
+    private FloatingActionButton fab;
+    private AnimatedVectorDrawable avdAddToDone, avdDoneToAdd;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,7 +37,12 @@ public class TestMain2Activity extends AppCompatActivity
 
         modal = findViewById(R.id.modal);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        avdAddToDone = (AnimatedVectorDrawable)
+                getResources().getDrawable(R.drawable.avd_add_to_done);
+        avdDoneToAdd = (AnimatedVectorDrawable)
+                getResources().getDrawable(R.drawable.avd_done_to_add);
+
+        fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -125,6 +135,21 @@ public class TestMain2Activity extends AppCompatActivity
         }
         TransitionManager.beginDelayedTransition((ViewGroup) modal.getRootView());
         modal.setLayoutParams(params);
+
+        // Run animated vector drawable if >= Lollipop, if not, just change the drawable
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            if (modalVisible) {
+                fab.setImageDrawable(avdDoneToAdd);
+                avdDoneToAdd.start();
+            } else {
+                fab.setImageDrawable(avdAddToDone);
+                avdAddToDone.start();
+            }
+        } else {
+            fab.setImageResource(
+                    modalVisible ? R.drawable.ic_add_black_24dp : R.drawable.ic_done_black_24dp);
+        }
+
         modalVisible = !modalVisible;
     }
 }
