@@ -20,6 +20,8 @@ import android.view.ViewGroup;
 public class TestMain2Activity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    private boolean modalVisible = false;
+    private CardView modal;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,12 +30,13 @@ public class TestMain2Activity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        modal = findViewById(R.id.modal);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                showHideModal();
             }
         });
 
@@ -102,5 +105,26 @@ public class TestMain2Activity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void showHideModal() {
+        ConstraintLayout.LayoutParams params =
+                (ConstraintLayout.LayoutParams) modal.getLayoutParams();
+        if (modalVisible) {
+            params.topToBottom = R.id.view_constrained_bottom;
+            params.topToTop = ConstraintLayout.LayoutParams.UNSET;
+            params.bottomToBottom = ConstraintLayout.LayoutParams.UNSET;
+            params.rightToRight = ConstraintLayout.LayoutParams.UNSET;
+            params.leftToLeft = ConstraintLayout.LayoutParams.UNSET;
+        } else {
+            params.topToBottom = ConstraintLayout.LayoutParams.UNSET;
+            params.topToTop = ConstraintLayout.LayoutParams.PARENT_ID;
+            params.bottomToBottom = ConstraintLayout.LayoutParams.PARENT_ID;
+            params.rightToRight = ConstraintLayout.LayoutParams.PARENT_ID;
+            params.leftToLeft = ConstraintLayout.LayoutParams.PARENT_ID;
+        }
+        TransitionManager.beginDelayedTransition((ViewGroup) modal.getRootView());
+        modal.setLayoutParams(params);
+        modalVisible = !modalVisible;
     }
 }
