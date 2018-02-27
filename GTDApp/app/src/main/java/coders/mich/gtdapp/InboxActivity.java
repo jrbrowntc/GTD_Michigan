@@ -1,10 +1,12 @@
 package coders.mich.gtdapp;
 
+import android.arch.lifecycle.Observer;
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -14,30 +16,27 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
+import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QuerySnapshot;
-import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
-import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.firebase.firestore.SetOptions;
 
-
 import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import coders.mich.gtdapp.data.AppDatabase;
+import coders.mich.gtdapp.data.AppViewModel;
+import coders.mich.gtdapp.model.Task;
 
 public class InboxActivity extends AppCompatActivity implements InboxAdapter.InboxAdapterOnClickHandler{
 
@@ -94,6 +93,18 @@ public class InboxActivity extends AppCompatActivity implements InboxAdapter.Inb
 
         // Using new Firestore Adapter
         mRecyclerView.setAdapter(mFirestoreAdapter);
+
+        // new Android Architecture Components test
+        AppViewModel viewModel = new AppViewModel();
+
+        AppDatabase appDatabase = AppDatabase.getInstance(this);
+
+        viewModel.getItems(appDatabase.taskDao()).observe(this, new Observer<List<Task>>() {
+            @Override
+            public void onChanged(@Nullable List<Task> tasks) {
+                Log.d(TAG, tasks.size() + " Items changed");
+            }
+        });
 
 
     }
@@ -209,7 +220,7 @@ public class InboxActivity extends AppCompatActivity implements InboxAdapter.Inb
                 .set(data, SetOptions.merge())
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
-                    public void onComplete(@NonNull Task<Void> task) {
+                    public void onComplete(@NonNull com.google.android.gms.tasks.Task<Void> task) {
                         Toast.makeText(getApplicationContext(), "Item has been moved to completed bucket", Toast.LENGTH_SHORT).show();
                     }
                 });
@@ -230,7 +241,7 @@ public class InboxActivity extends AppCompatActivity implements InboxAdapter.Inb
                 .set(data)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
-                    public void onComplete(@NonNull Task<Void> task) {
+                    public void onComplete(@NonNull com.google.android.gms.tasks.Task<Void> task) {
                         Toast.makeText(getApplicationContext(), "New test item added to inbox", Toast.LENGTH_SHORT).show();
                     }
                 });
@@ -242,7 +253,7 @@ public class InboxActivity extends AppCompatActivity implements InboxAdapter.Inb
                 .delete()
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
-                    public void onComplete(@NonNull Task<Void> task) {
+                    public void onComplete(@NonNull com.google.android.gms.tasks.Task<Void> task) {
                         Toast.makeText(getApplicationContext(), "Item has been deleted!", Toast.LENGTH_SHORT).show();
                     }
                 });
