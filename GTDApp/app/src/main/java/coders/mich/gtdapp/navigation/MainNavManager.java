@@ -136,4 +136,8 @@ public abstract class MainNavManager {
             container.removeView(view);
         }
     }
+
+    public void goToPage(int position) {
+        viewPager.setCurrentItem(position);
+    }
 }

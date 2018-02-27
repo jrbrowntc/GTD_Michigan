@@ -49,6 +49,12 @@ public class TestMainActivity extends AppCompatActivity {
         fabMargin = helpers.getDimension(this, R.dimen.fab_margin);
 
         fakeFab = findViewById(R.id.fab_resize);
+        fakeFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                navManager.goToPage(0);
+            }
+        });
         fabAnimationManager = new MainFabAnimationManager(this, fakeFab);
         fabBehavior = new FabBehavior() {
             @Override
