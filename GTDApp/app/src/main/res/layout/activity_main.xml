@@ -12,12 +12,15 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/btn_inbox"
-        android:text="INBOX"/>
+        android:onClick="openActivityBasedOnTag"
+        android:text="INBOX"
+        android:tag="InboxActivity"/>
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/btn_test_main_activity"
-        android:text="Test Main Activity"/>
+        android:onClick="openActivityBasedOnTag"
+        android:text="Test Main Activity"
+        android:tag="TestMainActivity"/>
 
 </LinearLayout>
