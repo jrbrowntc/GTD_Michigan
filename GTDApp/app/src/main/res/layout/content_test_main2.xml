@@ -9,21 +9,14 @@
     tools:showIn="@layout/app_bar_test_main2">
 
 
-    <!-- View to place modal under -->
-    <View
-        android:id="@+id/view_constrained_bottom"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        app:layout_constraintTop_toBottomOf="parent"/>
 
     <android.support.v7.widget.CardView
-        android:id="@+id/modal"
+        android:id="@+id/dialog_new_task"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/modal_margin"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent" >
-        <!--app:layout_constraintTop_toBottomOf="@id/view_constrained_bottom">-->
 
         <EditText
             android:id="@+id/et_new_task"

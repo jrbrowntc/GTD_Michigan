@@ -38,8 +38,8 @@ public class TestMain2Activity extends AppCompatActivity
 
     private static final String TAG = "TestMain2Activity";
 
-    private boolean modalVisible = false;
-    private CardView modal;
+    private boolean dialogVisible = false;
+    private CardView dialogNewTask;
 
     private FloatingActionButton fab;
     private AnimatedVectorDrawable avdAddToDone, avdDoneToAdd;
@@ -53,7 +53,7 @@ public class TestMain2Activity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        modal = findViewById(R.id.modal);
+        dialogNewTask = findViewById(R.id.dialog_new_task);
 
         avdAddToDone = (AnimatedVectorDrawable)
                 getResources().getDrawable(R.drawable.avd_add_to_done);
@@ -64,7 +64,7 @@ public class TestMain2Activity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showHideModal();
+                showHideDialog();
             }
         });
 
@@ -126,68 +126,68 @@ public class TestMain2Activity extends AppCompatActivity
         return true;
     }
 
-    private void showHideModal() {
-        modalVisible = !modalVisible;
+    private void showHideDialog() {
+        dialogVisible = !dialogVisible;
 
         // Order here is important:
-        // updateModalLayoutParams invokes TransitionManager.beginDelayedTransition
-        // which makes the modal fade in and out if called before circularRevealModal
-        circularRevealModal();
-        updateModalLayoutParams();
+        // updateDialogLayoutParams invokes TransitionManager.beginDelayedTransition
+        // which makes the dialog fade in and out if called before circularRevealDialog
+        circularRevealDialog();
+        updateDialogLayoutParams();
         updateFabIcon();
     }
 
-    private void circularRevealModal() {
-        int revealStartX = modal.getWidth();
-        int revealStartY = modal.getHeight();
-        float modalHypot = (float) Math.hypot(modal.getHeight(), modal.getWidth());
+    private void circularRevealDialog() {
+        int revealStartX = dialogNewTask.getWidth();
+        int revealStartY = dialogNewTask.getHeight();
+        float dialogHypot = (float) Math.hypot(dialogNewTask.getHeight(), dialogNewTask.getWidth());
         float revealStartRadius, revealEndRadius;
 
-        if (modalVisible) {
-            revealStartRadius = modalHypot;
-            revealEndRadius = 0;
-        } else {
+        if (dialogVisible) {
             revealStartRadius = 0;
-            revealEndRadius = modalHypot;
+            revealEndRadius = dialogHypot;
+        } else {
+            revealStartRadius = dialogHypot;
+            revealEndRadius = 0;
         }
 
-        if (modalVisible) modal.setVisibility(View.VISIBLE);
+        if (dialogVisible) dialogNewTask.setVisibility(View.VISIBLE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Animator circularReveal = ViewAnimationUtils.createCircularReveal(
-                    modal, revealStartX, revealStartY, revealStartRadius, revealEndRadius);
-            if (!modalVisible) {
+                    dialogNewTask, revealStartX, revealStartY, revealStartRadius, revealEndRadius);
+            if (!dialogVisible) {
                 circularReveal.addListener(new EndAnimatorListener() {
                     @Override
                     public void onAnimationEnd(Animator animation) {
-                        modal.setVisibility(View.INVISIBLE);
+                        dialogNewTask.setVisibility(View.INVISIBLE);
                     }
                 });
             }
             circularReveal.setInterpolator(new AccelerateDecelerateInterpolator());
             circularReveal.start();
         } else {
-            if (!modalVisible) modal.setVisibility(View.INVISIBLE);
+            if (!dialogVisible) dialogNewTask.setVisibility(View.INVISIBLE);
         }
     }
 
-    public void updateModalLayoutParams() {
+    public void updateDialogLayoutParams() {
         ConstraintLayout.LayoutParams params =
-                (ConstraintLayout.LayoutParams) modal.getLayoutParams();
+                (ConstraintLayout.LayoutParams) dialogNewTask.getLayoutParams();
 
-        if (modalVisible) {
+        if (dialogVisible) {
             params.topToTop = ConstraintLayout.LayoutParams.PARENT_ID;
         } else {
             params.topToTop = ConstraintLayout.LayoutParams.UNSET;
         }
-        TransitionManager.beginDelayedTransition((ViewGroup) modal.getRootView());
-        modal.setLayoutParams(params);
+        TransitionManager.beginDelayedTransition((ViewGroup) dialogNewTask.getRootView());
+        dialogNewTask.setLayoutParams(params);
     }
 
     // Updates the icon from add to done with Animated Vector Drawable if possible
     private void updateFabIcon() {
         // Run animated vector drawable if >= Lollipop, if not, just change the drawable
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            if (modalVisible) {
+            if (dialogVisible) {
                 fab.setImageDrawable(avdAddToDone);
                 avdAddToDone.start();
             } else {
@@ -196,10 +196,11 @@ public class TestMain2Activity extends AppCompatActivity
             }
         } else {
             fab.setImageResource(
-                    modalVisible ? R.drawable.ic_done_black_24dp : R.drawable.ic_add_black_24dp);
+                    dialogVisible ? R.drawable.ic_done_black_24dp : R.drawable.ic_add_black_24dp);
         }
     }
 
+    // This method dynamically fills the drawer menu based on the Buckets data
     public void fillMenu() {
         Menu menu = navigationView.getMenu();
         SubMenu subMenu = menu.addSubMenu("Buckets");
