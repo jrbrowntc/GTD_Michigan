@@ -15,6 +15,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
 import android.transition.AutoTransition;
+import android.transition.ChangeTransform;
+import android.transition.Transition;
 import android.transition.TransitionManager;
 import android.util.Log;
 import android.view.Menu;
@@ -127,36 +129,15 @@ public class TestMain2Activity extends AppCompatActivity
     private void showHideModal() {
         modalVisible = !modalVisible;
 
-        ConstraintLayout.LayoutParams params =
-                (ConstraintLayout.LayoutParams) modal.getLayoutParams();
-
-        if (modalVisible) {
-            params.topToTop = ConstraintLayout.LayoutParams.PARENT_ID;
-        } else {
-            params.topToTop = ConstraintLayout.LayoutParams.UNSET;
-        }
-
-        circularRevealModal(modalVisible);
-
-        TransitionManager.beginDelayedTransition((ViewGroup) modal.getRootView());
-        modal.setLayoutParams(params);
-
-        // Run animated vector drawable if >= Lollipop, if not, just change the drawable
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            if (modalVisible) {
-                fab.setImageDrawable(avdAddToDone);
-                avdAddToDone.start();
-            } else {
-                fab.setImageDrawable(avdDoneToAdd);
-                avdDoneToAdd.start();
-            }
-        } else {
-            fab.setImageResource(
-                    modalVisible ? R.drawable.ic_done_black_24dp : R.drawable.ic_add_black_24dp);
-        }
+        // Order here is important:
+        // updateModalLayoutParams invokes TransitionManager.beginDelayedTransition
+        // which makes the modal fade in and out if called before circularRevealModal
+        circularRevealModal();
+        updateModalLayoutParams();
+        updateFabIcon();
     }
 
-    private void circularRevealModal(boolean open) {
+    private void circularRevealModal() {
         int revealStartX = modal.getWidth();
         int revealStartY = modal.getHeight();
         float modalHypot = (float) Math.hypot(modal.getHeight(), modal.getWidth());
@@ -170,11 +151,11 @@ public class TestMain2Activity extends AppCompatActivity
             revealEndRadius = modalHypot;
         }
 
-        if (open) modal.setVisibility(View.VISIBLE);
+        if (modalVisible) modal.setVisibility(View.VISIBLE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Animator circularReveal = ViewAnimationUtils.createCircularReveal(
                     modal, revealStartX, revealStartY, revealStartRadius, revealEndRadius);
-            if (!open) {
+            if (!modalVisible) {
                 circularReveal.addListener(new EndAnimatorListener() {
                     @Override
                     public void onAnimationEnd(Animator animation) {
@@ -185,7 +166,37 @@ public class TestMain2Activity extends AppCompatActivity
             circularReveal.setInterpolator(new AccelerateDecelerateInterpolator());
             circularReveal.start();
         } else {
-            if (!open) modal.setVisibility(View.INVISIBLE);
+            if (!modalVisible) modal.setVisibility(View.INVISIBLE);
+        }
+    }
+
+    public void updateModalLayoutParams() {
+        ConstraintLayout.LayoutParams params =
+                (ConstraintLayout.LayoutParams) modal.getLayoutParams();
+
+        if (modalVisible) {
+            params.topToTop = ConstraintLayout.LayoutParams.PARENT_ID;
+        } else {
+            params.topToTop = ConstraintLayout.LayoutParams.UNSET;
+        }
+        TransitionManager.beginDelayedTransition((ViewGroup) modal.getRootView());
+        modal.setLayoutParams(params);
+    }
+
+    // Updates the icon from add to done with Animated Vector Drawable if possible
+    private void updateFabIcon() {
+        // Run animated vector drawable if >= Lollipop, if not, just change the drawable
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            if (modalVisible) {
+                fab.setImageDrawable(avdAddToDone);
+                avdAddToDone.start();
+            } else {
+                fab.setImageDrawable(avdDoneToAdd);
+                avdDoneToAdd.start();
+            }
+        } else {
+            fab.setImageResource(
+                    modalVisible ? R.drawable.ic_done_black_24dp : R.drawable.ic_add_black_24dp);
         }
     }
 
