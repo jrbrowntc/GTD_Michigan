@@ -1,6 +1,7 @@
 package coders.mich.gtdapp;
 
 import android.animation.Animator;
+import android.content.Intent;
 import android.graphics.drawable.AnimatedVectorDrawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -14,11 +15,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
-import android.transition.AutoTransition;
-import android.transition.ChangeTransform;
-import android.transition.Transition;
 import android.transition.TransitionManager;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
@@ -37,6 +34,8 @@ public class TestMain2Activity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private static final String TAG = "TestMain2Activity";
+
+    private static final String INTENT_BUCKET_NAME = "INTENT_BUCKET_NAME";
 
     private boolean dialogVisible = false;
     private CardView dialogNewTask;
@@ -118,9 +117,10 @@ public class TestMain2Activity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
+        String bucketName = item.getIntent().getStringExtra(INTENT_BUCKET_NAME);
 
-        // TODO: 2/27/2018 Come up with some way of detecting which of the dynamically created buckets was selected
-
+        Snackbar.make(fab, bucketName + " selected", Snackbar.LENGTH_LONG).show();
+        
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
@@ -215,8 +215,12 @@ public class TestMain2Activity extends AppCompatActivity
 
             if (iconId == null) iconId = R.drawable.ic_folder_black_24dp;
 
+            Intent menuItemIntent = new Intent();
+            menuItemIntent.putExtra(INTENT_BUCKET_NAME, bucketName);
+
             subMenu.add(0, Menu.FIRST + i, Menu.FIRST, bucketName)
                     .setCheckable(true)
+                    .setIntent(menuItemIntent)
                     .setIcon(iconId);
         }
     }
