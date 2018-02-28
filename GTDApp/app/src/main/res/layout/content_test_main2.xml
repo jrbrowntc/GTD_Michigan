@@ -21,7 +21,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/modal_margin"
-        app:layout_constraintTop_toBottomOf="@id/view_constrained_bottom">
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent" >
+        <!--app:layout_constraintTop_toBottomOf="@id/view_constrained_bottom">-->
 
         <EditText
             android:id="@+id/et_new_task"

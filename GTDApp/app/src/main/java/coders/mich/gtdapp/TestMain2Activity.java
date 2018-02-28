@@ -1,5 +1,6 @@
 package coders.mich.gtdapp;
 
+import android.animation.Animator;
 import android.graphics.drawable.AnimatedVectorDrawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -15,19 +16,25 @@ import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
 import android.transition.AutoTransition;
 import android.transition.TransitionManager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
+import android.view.ViewAnimationUtils;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateDecelerateInterpolator;
 
 import java.util.List;
 
+import coders.mich.gtdapp.animation.EndAnimatorListener;
 import coders.mich.gtdapp.data.DummyData;
 import coders.mich.gtdapp.data.dao.Bucket;
 
 public class TestMain2Activity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+    private static final String TAG = "TestMain2Activity";
 
     private boolean modalVisible = false;
     private CardView modal;
@@ -118,39 +125,68 @@ public class TestMain2Activity extends AppCompatActivity
     }
 
     private void showHideModal() {
+        modalVisible = !modalVisible;
+
         ConstraintLayout.LayoutParams params =
                 (ConstraintLayout.LayoutParams) modal.getLayoutParams();
+
         if (modalVisible) {
-            params.topToBottom = R.id.view_constrained_bottom;
-            params.topToTop = ConstraintLayout.LayoutParams.UNSET;
-            params.bottomToBottom = ConstraintLayout.LayoutParams.UNSET;
-            params.rightToRight = ConstraintLayout.LayoutParams.UNSET;
-            params.leftToLeft = ConstraintLayout.LayoutParams.UNSET;
-        } else {
-            params.topToBottom = ConstraintLayout.LayoutParams.UNSET;
             params.topToTop = ConstraintLayout.LayoutParams.PARENT_ID;
-            params.bottomToBottom = ConstraintLayout.LayoutParams.PARENT_ID;
-            params.rightToRight = ConstraintLayout.LayoutParams.PARENT_ID;
-            params.leftToLeft = ConstraintLayout.LayoutParams.PARENT_ID;
+        } else {
+            params.topToTop = ConstraintLayout.LayoutParams.UNSET;
         }
+
+        circularRevealModal(modalVisible);
+
         TransitionManager.beginDelayedTransition((ViewGroup) modal.getRootView());
         modal.setLayoutParams(params);
 
         // Run animated vector drawable if >= Lollipop, if not, just change the drawable
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             if (modalVisible) {
-                fab.setImageDrawable(avdDoneToAdd);
-                avdDoneToAdd.start();
-            } else {
                 fab.setImageDrawable(avdAddToDone);
                 avdAddToDone.start();
+            } else {
+                fab.setImageDrawable(avdDoneToAdd);
+                avdDoneToAdd.start();
             }
         } else {
             fab.setImageResource(
-                    modalVisible ? R.drawable.ic_add_black_24dp : R.drawable.ic_done_black_24dp);
+                    modalVisible ? R.drawable.ic_done_black_24dp : R.drawable.ic_add_black_24dp);
+        }
+    }
+
+    private void circularRevealModal(boolean open) {
+        int revealStartX = modal.getWidth();
+        int revealStartY = modal.getHeight();
+        float modalHypot = (float) Math.hypot(modal.getHeight(), modal.getWidth());
+        float revealStartRadius, revealEndRadius;
+
+        if (modalVisible) {
+            revealStartRadius = modalHypot;
+            revealEndRadius = 0;
+        } else {
+            revealStartRadius = 0;
+            revealEndRadius = modalHypot;
         }
 
-        modalVisible = !modalVisible;
+        if (open) modal.setVisibility(View.VISIBLE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Animator circularReveal = ViewAnimationUtils.createCircularReveal(
+                    modal, revealStartX, revealStartY, revealStartRadius, revealEndRadius);
+            if (!open) {
+                circularReveal.addListener(new EndAnimatorListener() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        modal.setVisibility(View.INVISIBLE);
+                    }
+                });
+            }
+            circularReveal.setInterpolator(new AccelerateDecelerateInterpolator());
+            circularReveal.start();
+        } else {
+            if (!open) modal.setVisibility(View.INVISIBLE);
+        }
     }
 
     public void fillMenu() {
