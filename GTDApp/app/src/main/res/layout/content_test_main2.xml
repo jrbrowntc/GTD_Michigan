@@ -19,9 +19,17 @@
     <android.support.v7.widget.CardView
         android:id="@+id/modal"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/modal_height"
+        android:layout_height="wrap_content"
         android:layout_margin="@dimen/modal_margin"
         app:layout_constraintTop_toBottomOf="@id/view_constrained_bottom">
+
+        <EditText
+            android:id="@+id/et_new_task"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="24dp"
+            android:hint="Enter new task"/>
+
 
     </android.support.v7.widget.CardView>
 
