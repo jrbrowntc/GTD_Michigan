@@ -5,7 +5,7 @@
 
 
     <dimen name="modal_margin">44dp</dimen> <!-- Fab Margin + 1/2 Fab Size -->
-    <dimen name="modal_height">200dp</dimen>
+    <dimen name="modal_height">100dp</dimen>
 
     <dimen name="fab_size">56dp</dimen>
     <dimen name="fab_margin">16dp</dimen>

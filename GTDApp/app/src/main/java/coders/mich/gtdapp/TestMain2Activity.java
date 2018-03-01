@@ -1,8 +1,10 @@
 package coders.mich.gtdapp;
 
+import android.arch.lifecycle.Observer;
 import android.graphics.drawable.AnimatedVectorDrawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -12,19 +14,26 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.transition.AutoTransition;
 import android.transition.TransitionManager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 
 import java.util.List;
 
+import coders.mich.gtdapp.data.AppDatabase;
+import coders.mich.gtdapp.data.AppViewModel;
 import coders.mich.gtdapp.data.DummyData;
+import coders.mich.gtdapp.data.TaskDao;
 import coders.mich.gtdapp.data.dao.Bucket;
+import coders.mich.gtdapp.model.Task;
+import coders.mich.gtdapp.ui.TaskAdapter;
 
 public class TestMain2Activity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -45,20 +54,55 @@ public class TestMain2Activity extends AppCompatActivity
         setSupportActionBar(toolbar);
 
         modal = findViewById(R.id.modal);
+        RecyclerView rvTaskList = findViewById(R.id.rv_task_list);
 
         avdAddToDone = (AnimatedVectorDrawable)
                 getResources().getDrawable(R.drawable.avd_add_to_done);
         avdDoneToAdd = (AnimatedVectorDrawable)
                 getResources().getDrawable(R.drawable.avd_done_to_add);
 
+        final EditText etTaskInput = findViewById(R.id.et_task_input);
+
+        final AppViewModel viewModel = new AppViewModel();
+        final AppDatabase appDatabase = AppDatabase.getInstance(this);
+        final TaskDao taskDao = appDatabase.taskDao();
+
         fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                // If modal visible, add the task
+                if (modalVisible) {
+                    // get the task info from an edit text and save into an object
+                    String taskName = etTaskInput.getText().toString();
+                    etTaskInput.setText("");
+
+                    Task task = new Task();
+                    task.setName(taskName);
+                    task.setDescription("this is only a test");
+                    task.setBucketId(1);
+
+                    if (!taskName.equals("")){
+                        viewModel.createTask(task, taskDao);
+                    }
+                }
                 showHideModal();
             }
         });
 
+        final TaskAdapter adapter = new TaskAdapter();
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+
+        rvTaskList.setAdapter(adapter);
+        rvTaskList.setLayoutManager(layoutManager);
+
+        viewModel.getItems(taskDao).observe(this, new Observer<List<Task>>() {
+            @Override
+            public void onChanged(@Nullable List<Task> tasks) {
+                adapter.updateTasks(tasks);
+            }
+        });
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
