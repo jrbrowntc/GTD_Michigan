@@ -1,6 +1,8 @@
 package coders.mich.gtdapp;
 
 import android.arch.lifecycle.Observer;
+import android.animation.Animator;
+import android.content.Intent;
 import android.graphics.drawable.AnimatedVectorDrawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -22,6 +24,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
+import android.view.ViewAnimationUtils;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
@@ -29,6 +32,11 @@ import java.util.List;
 
 import coders.mich.gtdapp.data.AppDatabase;
 import coders.mich.gtdapp.data.AppViewModel;
+import android.view.animation.AccelerateDecelerateInterpolator;
+
+import java.util.List;
+
+import coders.mich.gtdapp.animation.EndAnimatorListener;
 import coders.mich.gtdapp.data.DummyData;
 import coders.mich.gtdapp.data.TaskDao;
 import coders.mich.gtdapp.data.dao.Bucket;
@@ -38,8 +46,12 @@ import coders.mich.gtdapp.ui.TaskAdapter;
 public class TestMain2Activity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    private boolean modalVisible = false;
-    private CardView modal;
+    private static final String TAG = "TestMain2Activity";
+
+    private static final String INTENT_BUCKET_NAME = "INTENT_BUCKET_NAME";
+
+    private boolean dialogVisible = false;
+    private CardView dialogNewTask;
 
     private FloatingActionButton fab;
     private AnimatedVectorDrawable avdAddToDone, avdDoneToAdd;
@@ -53,8 +65,8 @@ public class TestMain2Activity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        modal = findViewById(R.id.modal);
         RecyclerView rvTaskList = findViewById(R.id.rv_task_list);
+        dialogNewTask = findViewById(R.id.dialog_new_task);
 
         avdAddToDone = (AnimatedVectorDrawable)
                 getResources().getDrawable(R.drawable.avd_add_to_done);
@@ -73,7 +85,7 @@ public class TestMain2Activity extends AppCompatActivity
             public void onClick(View view) {
 
                 // If modal visible, add the task
-                if (modalVisible) {
+                if (dialogVisible) {
                     // get the task info from an edit text and save into an object
                     String taskName = etTaskInput.getText().toString();
                     etTaskInput.setText("");
@@ -87,7 +99,7 @@ public class TestMain2Activity extends AppCompatActivity
                         viewModel.createTask(task, taskDao);
                     }
                 }
-                showHideModal();
+                showHideDialog();
             }
         });
 
@@ -153,50 +165,90 @@ public class TestMain2Activity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
+        String bucketName = item.getIntent().getStringExtra(INTENT_BUCKET_NAME);
 
-        // TODO: 2/27/2018 Come up with some way of detecting which of the dynamically created buckets was selected
-
+        Snackbar.make(fab, bucketName + " selected", Snackbar.LENGTH_LONG).show();
+        
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
 
-    private void showHideModal() {
-        ConstraintLayout.LayoutParams params =
-                (ConstraintLayout.LayoutParams) modal.getLayoutParams();
-        if (modalVisible) {
-            params.topToBottom = R.id.view_constrained_bottom;
-            params.topToTop = ConstraintLayout.LayoutParams.UNSET;
-            params.bottomToBottom = ConstraintLayout.LayoutParams.UNSET;
-            params.rightToRight = ConstraintLayout.LayoutParams.UNSET;
-            params.leftToLeft = ConstraintLayout.LayoutParams.UNSET;
-        } else {
-            params.topToBottom = ConstraintLayout.LayoutParams.UNSET;
-            params.topToTop = ConstraintLayout.LayoutParams.PARENT_ID;
-            params.bottomToBottom = ConstraintLayout.LayoutParams.PARENT_ID;
-            params.rightToRight = ConstraintLayout.LayoutParams.PARENT_ID;
-            params.leftToLeft = ConstraintLayout.LayoutParams.PARENT_ID;
-        }
-        TransitionManager.beginDelayedTransition((ViewGroup) modal.getRootView());
-        modal.setLayoutParams(params);
+    private void showHideDialog() {
+        dialogVisible = !dialogVisible;
 
+        // Order here is important:
+        // updateDialogLayoutParams invokes TransitionManager.beginDelayedTransition
+        // which makes the dialog fade in and out if called before circularRevealDialog
+        circularRevealDialog();
+        updateDialogLayoutParams();
+        updateFabIcon();
+    }
+
+    private void circularRevealDialog() {
+        int revealStartX = dialogNewTask.getWidth();
+        int revealStartY = dialogNewTask.getHeight();
+        float dialogHypot = (float) Math.hypot(dialogNewTask.getHeight(), dialogNewTask.getWidth());
+        float revealStartRadius, revealEndRadius;
+
+        if (dialogVisible) {
+            revealStartRadius = 0;
+            revealEndRadius = dialogHypot;
+        } else {
+            revealStartRadius = dialogHypot;
+            revealEndRadius = 0;
+        }
+
+        if (dialogVisible) dialogNewTask.setVisibility(View.VISIBLE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Animator circularReveal = ViewAnimationUtils.createCircularReveal(
+                    dialogNewTask, revealStartX, revealStartY, revealStartRadius, revealEndRadius);
+            if (!dialogVisible) {
+                circularReveal.addListener(new EndAnimatorListener() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        dialogNewTask.setVisibility(View.INVISIBLE);
+                    }
+                });
+            }
+            circularReveal.setInterpolator(new AccelerateDecelerateInterpolator());
+            circularReveal.start();
+        } else {
+            if (!dialogVisible) dialogNewTask.setVisibility(View.INVISIBLE);
+        }
+    }
+
+    public void updateDialogLayoutParams() {
+        ConstraintLayout.LayoutParams params =
+                (ConstraintLayout.LayoutParams) dialogNewTask.getLayoutParams();
+
+        if (dialogVisible) {
+            params.topToTop = ConstraintLayout.LayoutParams.PARENT_ID;
+        } else {
+            params.topToTop = ConstraintLayout.LayoutParams.UNSET;
+        }
+        TransitionManager.beginDelayedTransition((ViewGroup) dialogNewTask.getRootView());
+        dialogNewTask.setLayoutParams(params);
+    }
+
+    // Updates the icon from add to done with Animated Vector Drawable if possible
+    private void updateFabIcon() {
         // Run animated vector drawable if >= Lollipop, if not, just change the drawable
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            if (modalVisible) {
-                fab.setImageDrawable(avdDoneToAdd);
-                avdDoneToAdd.start();
-            } else {
+            if (dialogVisible) {
                 fab.setImageDrawable(avdAddToDone);
                 avdAddToDone.start();
+            } else {
+                fab.setImageDrawable(avdDoneToAdd);
+                avdDoneToAdd.start();
             }
         } else {
             fab.setImageResource(
-                    modalVisible ? R.drawable.ic_add_black_24dp : R.drawable.ic_done_black_24dp);
+                    dialogVisible ? R.drawable.ic_done_black_24dp : R.drawable.ic_add_black_24dp);
         }
-
-        modalVisible = !modalVisible;
     }
 
+    // This method dynamically fills the drawer menu based on the Buckets data
     public void fillMenu() {
         Menu menu = navigationView.getMenu();
         SubMenu subMenu = menu.addSubMenu("Buckets");
@@ -211,8 +263,12 @@ public class TestMain2Activity extends AppCompatActivity
 
             if (iconId == null) iconId = R.drawable.ic_folder_black_24dp;
 
+            Intent menuItemIntent = new Intent();
+            menuItemIntent.putExtra(INTENT_BUCKET_NAME, bucketName);
+
             subMenu.add(0, Menu.FIRST + i, Menu.FIRST, bucketName)
                     .setCheckable(true)
+                    .setIntent(menuItemIntent)
                     .setIcon(iconId);
         }
     }
