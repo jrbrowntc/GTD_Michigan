@@ -2,6 +2,8 @@ package coders.mich.gtdapp.data;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.ViewModel;
+import android.os.AsyncTask;
+import android.util.Log;
 
 import java.util.List;
 
@@ -13,6 +15,7 @@ import coders.mich.gtdapp.model.Task;
  */
 
 public class AppViewModel extends ViewModel {
+    private static final String TAG = AppViewModel.class.getSimpleName();
 
     public AppViewModel() {
     }
@@ -36,4 +39,28 @@ public class AppViewModel extends ViewModel {
     public LiveData<List<Bucket>> getBuckets(BucketDao bucketDao) {
         return bucketDao.getBuckets();
     }
+
+    public void createBucket(final Bucket bucket, final BucketDao bucketDao) {
+        // AsyncTask won't leak memory when used within the ViewModel
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... voids) {
+                bucketDao.insert(bucket);
+                return null;
+            }
+        }.execute();
+    }
+
+    public void createTask(final Task task, final TaskDao taskDao) {
+        // AsyncTask won't leak memory when used within the ViewModel
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... voids) {
+                taskDao.insert(task);
+                Log.d(TAG, "doInBackground: Task created");
+                return null;
+            }
+        }.execute();
+    }
+
 }
