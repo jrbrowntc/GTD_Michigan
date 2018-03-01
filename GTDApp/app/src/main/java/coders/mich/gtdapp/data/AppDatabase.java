@@ -30,10 +30,8 @@ public abstract class AppDatabase extends RoomDatabase {
                     .databaseBuilder(context.getApplicationContext(), AppDatabase.class, "gtd_database")
 
                     // @todo fix blocking MainThread queries
-                    .allowMainThreadQueries()
                     .build();
 
-            sInstance.populateInitialData();
         }
         return sInstance;
     }
