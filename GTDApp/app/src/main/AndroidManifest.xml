@@ -9,26 +9,21 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        <activity android:name=".InboxActivity" />
-        <activity
-            android:name=".TestMainActivity"
-            android:label="@string/title_activity_test_main"></activity>
 
         <meta-data
             android:name="firebase_analytics_collection_deactivated"
             android:value="true" />
 
         <activity
-            android:name=".TestMain2Activity"
-            android:label="@string/title_activity_test_main2"
-            android:theme="@style/ProtoAppTheme.NoActionBar"></activity>
+            android:name=".MainActivity"
+            android:label="@string/title_activity_main"
+            android:theme="@style/AppTheme.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

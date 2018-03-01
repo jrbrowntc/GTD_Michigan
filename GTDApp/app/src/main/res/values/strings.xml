@@ -1,18 +1,6 @@
 <resources>
     <string name="app_name">GTD App</string>
-    <string name="title_activity_test_main">Getting Things Done</string>
-
-    <string name="title_home">Home</string>
-    <string name="title_dashboard">Dashboard</string>
-    <string name="title_notifications">Notifications</string>
-
-    <!-- Bottom Nav Bar -->
-    <string name="title_navigation_capture">Capture</string>
-    <string name="title_navigation_process">Process</string>
-    <string name="title_navigation_organize">Organize</string>
-    <string name="title_navigation_review">Review</string>
-    <string name="title_navigation_engage">Engage</string>
-    <string name="title_activity_test_main2">@string/title_activity_test_main</string>
+    <string name="title_activity_main">Getting Things Done</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
