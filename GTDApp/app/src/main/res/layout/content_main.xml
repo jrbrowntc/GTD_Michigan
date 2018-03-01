@@ -8,33 +8,6 @@
     tools:context="coders.mich.gtdapp.MainActivity"
     tools:showIn="@layout/app_bar_main">
 
-
-
-    <android.support.v7.widget.CardView
-        android:id="@+id/dialog_new_task"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/modal_margin"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toBottomOf="parent" >
-
-        <EditText
-            android:id="@+id/et_new_task"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="24dp"
-            android:hint="Enter new task"/>
-
-
-        <EditText
-            android:id="@+id/et_task_input"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginRight="20dp"
-            android:layout_marginLeft="20dp" />
-    </android.support.v7.widget.CardView>
-
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rv_task_list"
         android:layout_width="0dp"

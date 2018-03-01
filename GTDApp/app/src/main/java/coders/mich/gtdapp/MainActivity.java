@@ -7,7 +7,7 @@ import android.graphics.drawable.AnimatedVectorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.constraint.ConstraintLayout;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
@@ -20,6 +20,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.transition.TransitionManager;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
@@ -217,14 +218,11 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void updateDialogLayoutParams() {
-        ConstraintLayout.LayoutParams params =
-                (ConstraintLayout.LayoutParams) dialogNewTask.getLayoutParams();
+        CoordinatorLayout.LayoutParams params =
+                (CoordinatorLayout.LayoutParams) dialogNewTask.getLayoutParams();
 
-        if (dialogVisible) {
-            params.topToTop = ConstraintLayout.LayoutParams.PARENT_ID;
-        } else {
-            params.topToTop = ConstraintLayout.LayoutParams.UNSET;
-        }
+        params.gravity = dialogVisible ? Gravity.CENTER : Gravity.BOTTOM;
+
         TransitionManager.beginDelayedTransition((ViewGroup) dialogNewTask.getRootView());
         dialogNewTask.setLayoutParams(params);
     }
