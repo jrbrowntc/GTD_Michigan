@@ -3,6 +3,7 @@ package coders.mich.gtdapp;
 import android.arch.lifecycle.Observer;
 import android.animation.Animator;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.drawable.AnimatedVectorDrawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -19,7 +20,9 @@ import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.transition.AutoTransition;
 import android.transition.TransitionManager;
+import android.transition.TransitionSet;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -51,6 +54,7 @@ public class MainActivity extends AppCompatActivity
 
     private boolean dialogVisible = false;
     private CardView dialogNewTask;
+    private View dialogScrim;
 
     private FloatingActionButton fab;
     private AnimatedVectorDrawable avdAddToDone, avdDoneToAdd;
@@ -66,6 +70,7 @@ public class MainActivity extends AppCompatActivity
 
         RecyclerView rvTaskList = findViewById(R.id.rv_task_list);
         dialogNewTask = findViewById(R.id.dialog_new_task);
+        dialogScrim = findViewById(R.id.new_task_scrim);
 
         avdAddToDone = (AnimatedVectorDrawable)
                 getResources().getDrawable(R.drawable.avd_add_to_done);
@@ -101,6 +106,12 @@ public class MainActivity extends AppCompatActivity
                 showHideDialog();
             }
         });
+        dialogScrim.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showHideDialog();
+            }
+        });
 
         final TaskAdapter adapter = new TaskAdapter();
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
@@ -111,7 +122,7 @@ public class MainActivity extends AppCompatActivity
         viewModel.getItems(taskDao).observe(this, new Observer<List<Task>>() {
             @Override
             public void onChanged(@Nullable List<Task> tasks) {
-                adapter.updateTasks(tasks);
+                //adapter.updateTasks(tasks);
             }
         });
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -181,6 +192,7 @@ public class MainActivity extends AppCompatActivity
         // which makes the dialog fade in and out if called before circularRevealDialog
         circularRevealDialog();
         updateDialogLayoutParams();
+        updateScrim();
         updateFabIcon();
     }
 
@@ -223,8 +235,14 @@ public class MainActivity extends AppCompatActivity
 
         params.gravity = dialogVisible ? Gravity.CENTER : Gravity.BOTTOM;
 
-        TransitionManager.beginDelayedTransition((ViewGroup) dialogNewTask.getRootView());
+        AutoTransition transition = new AutoTransition();
+        transition.setOrdering(TransitionSet.ORDERING_TOGETHER);
+        TransitionManager.beginDelayedTransition((ViewGroup) dialogNewTask.getRootView(), transition);
         dialogNewTask.setLayoutParams(params);
+    }
+
+    public void updateScrim() {
+        dialogScrim.setVisibility(dialogVisible ? View.VISIBLE : View.INVISIBLE);
     }
 
     // Updates the icon from add to done with Animated Vector Drawable if possible
