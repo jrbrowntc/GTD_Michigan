@@ -41,7 +41,7 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 import coders.mich.gtdapp.animation.EndAnimatorListener;
 import coders.mich.gtdapp.data.DummyData;
 import coders.mich.gtdapp.data.TaskDao;
-import coders.mich.gtdapp.data.dao.Bucket;
+import coders.mich.gtdapp.model.Bucket;
 import coders.mich.gtdapp.model.Task;
 import coders.mich.gtdapp.ui.TaskAdapter;
 
@@ -125,6 +125,13 @@ public class MainActivity extends AppCompatActivity
                 //adapter.updateTasks(tasks);
             }
         });
+        viewModel.getBuckets(appDatabase.bucketDao()).observe(this, new Observer<List<Bucket>>() {
+            @Override
+            public void onChanged(@Nullable List<Bucket> buckets) {
+                fillMenu(buckets);
+            }
+        });
+
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -133,8 +140,6 @@ public class MainActivity extends AppCompatActivity
 
         navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-
-        fillMenu();
     }
 
     @Override
@@ -265,12 +270,9 @@ public class MainActivity extends AppCompatActivity
     }
 
     // This method dynamically fills the drawer menu based on the Buckets data
-    public void fillMenu() {
+    public void fillMenu(List<Bucket> buckets) {
         Menu menu = navigationView.getMenu();
         SubMenu subMenu = menu.addSubMenu("Buckets");
-
-        // TODO: 2/27/2018 Replace with Room DAO Method to get all buckets
-        List<Bucket> buckets = DummyData.getBuckets();
 
         for (int i = 0; i < buckets.size(); i++) {
             Bucket bucket = buckets.get(i);
