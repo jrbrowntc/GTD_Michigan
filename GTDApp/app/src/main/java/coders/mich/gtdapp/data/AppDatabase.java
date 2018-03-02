@@ -32,11 +32,33 @@ public abstract class AppDatabase extends RoomDatabase {
         if (null == sInstance) {
             sInstance = Room
                     .databaseBuilder(context, AppDatabase.class, "gtd_database")
+                    .addCallback(getDatabaseCreationCallback())
                     .addMigrations(MIGRATION_1_2)
                     .build();
 
         }
         return sInstance;
+    }
+
+    private static RoomDatabase.Callback getDatabaseCreationCallback() {
+        return new RoomDatabase.Callback(){
+            @Override
+            public void onCreate(@NonNull SupportSQLiteDatabase db) {
+                super.onCreate(db);
+                db.beginTransaction();
+                try {
+                    db.execSQL("INSERT INTO Bucket " +
+                            "(name, iconId) " +
+                            "VALUES " +
+                            "('Inbox', " + R.drawable.ic_inbox_black_24dp + ")," +
+                            "('Trash', " + R.drawable.ic_delete_black_24dp + ");"
+                    );
+                    db.setTransactionSuccessful();
+                } finally {
+                    db.endTransaction();
+                }
+            }
+        };
     }
 
     private void populateInitialData() {
