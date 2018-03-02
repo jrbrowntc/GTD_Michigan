@@ -1,11 +1,15 @@
 package coders.mich.gtdapp.data;
 
+import android.arch.persistence.db.SupportSQLiteDatabase;
 import android.arch.persistence.room.Database;
 import android.arch.persistence.room.Room;
 import android.arch.persistence.room.RoomDatabase;
+import android.arch.persistence.room.migration.Migration;
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.util.Log;
 
+import coders.mich.gtdapp.R;
 import coders.mich.gtdapp.model.Bucket;
 import coders.mich.gtdapp.model.Task;
 
@@ -14,7 +18,7 @@ import coders.mich.gtdapp.model.Task;
  */
 
 
-@Database(entities = {Task.class, Bucket.class}, version = 1)
+@Database(entities = {Task.class, Bucket.class}, version = 2)
 public abstract class AppDatabase extends RoomDatabase {
 
     private final String TAG = AppDatabase.class.getSimpleName();
@@ -27,9 +31,8 @@ public abstract class AppDatabase extends RoomDatabase {
     public static synchronized AppDatabase getInstance(final Context context) {
         if (null == sInstance) {
             sInstance = Room
-                    .databaseBuilder(context.getApplicationContext(), AppDatabase.class, "gtd_database")
-
-                    // @todo fix blocking MainThread queries
+                    .databaseBuilder(context, AppDatabase.class, "gtd_database")
+                    .addMigrations(MIGRATION_1_2)
                     .build();
 
         }
@@ -59,5 +62,36 @@ public abstract class AppDatabase extends RoomDatabase {
             }
         }
     }
+
+    static final Migration MIGRATION_1_2 = new Migration(1, 2) {
+        @Override
+        public void migrate(SupportSQLiteDatabase database) {
+
+            // Add Inbox and Trash Buckets if they don't Exist
+            database.execSQL(
+                    "INSERT INTO Bucket(name) " +
+                            "SELECT 'Inbox' " +
+                            "WHERE NOT EXISTS(SELECT 1 FROM Bucket WHERE name 'Inbox');");
+            database.execSQL(
+                    "INSERT INTO Bucket(name) " +
+                            "SELECT 'Trash' " +
+                            "WHERE NOT EXISTS(SELECT 1 FROM Bucket WHERE name 'Trash');");
+
+            // Add the iconId column
+            database.execSQL(
+                    "ALTER TABLE Bucket " +
+                            "ADD COLUMN iconId INTEGER;");
+
+            // Add Inbox and Trash iconIds
+            database.execSQL(
+                    "UPDATE Bucket" +
+                            " SET iconId = " + R.drawable.ic_inbox_black_24dp +
+                            " WHERE name = 'Inbox';");
+            database.execSQL(
+                    "UPDATE Bucket" +
+                            " SET iconId = " + R.drawable.ic_delete_black_24dp +
+                            " WHERE name = 'Trash';");
+        }
+    };
 
 }

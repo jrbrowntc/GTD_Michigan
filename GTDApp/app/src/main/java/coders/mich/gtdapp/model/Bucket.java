@@ -15,6 +15,9 @@ public class Bucket {
 
     private String name;
 
+    // A resource id for an drawable to be shown in the drawer menu
+    private Integer iconId;
+
     public Bucket() {
     }
 
@@ -35,4 +38,11 @@ public class Bucket {
         this.name = name;
     }
 
+    public Integer getIconId() {
+        return iconId;
+    }
+
+    public void setIconId(Integer iconId) {
+        this.iconId = iconId;
+    }
 }
